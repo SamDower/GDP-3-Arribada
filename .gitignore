@@ -6,3 +6,5 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+
+cameratraps/detection/__pycache__/run_detector.cpython-38.pyc
