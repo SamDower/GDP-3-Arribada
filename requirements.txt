@@ -1,4 +1,4 @@
-tensorflow
+# tensorflow
 
 Pillow 
 #nb_conda_kernels
@@ -10,7 +10,7 @@ numpy
 matplotlib
 #nb_conda_kernels
 ipykernel
-#opencv
+opencv-python
 requests
 
 pandas
