@@ -123,6 +123,12 @@ def producer_func(in_queue, stream_link):
             print('[Input thread] Error retrieving frame from stream (ret = False)')
             continue
 
+        num_frames += 1
+
+        # drop this frame if queue is full
+        if in_queue.full():
+            continue
+
         try:
             if verbose:
                 print('[Input thread] Loading frame {}'.format(num_frames), flush=True)
@@ -134,7 +140,6 @@ def producer_func(in_queue, stream_link):
 
         if verbose:
             print('[Input thread] Queueing frame {}'.format(num_frames), flush=True)
-        num_frames += 1
 
         in_queue.put(image)
     
