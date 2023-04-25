@@ -54,7 +54,7 @@ from multiprocessing import Process
 from multiprocessing.pool import Pool as workerpool
 
 # Number of images to pre-fetch
-max_queue_size = 10
+max_queue_size = 2
 use_threads_for_queue = False
 verbose = False
 
@@ -115,6 +115,7 @@ def producer_func(in_queue, stream_link):
         print('[Input thread] Starting', flush=True)
 
     num_frames = 0
+    num_images = 0
     cap = cv2.VideoCapture(stream_link)
 
     while cap.isOpened():
@@ -125,13 +126,16 @@ def producer_func(in_queue, stream_link):
 
         num_frames += 1
 
-        # drop this frame if queue is full
         if in_queue.full():
+            if verbose:
+                print('[Input thread] Skipping frame {}'.format(num_frames), flush=True)
             continue
+
+        num_images += 1
 
         try:
             if verbose:
-                print('[Input thread] Loading frame {}'.format(num_frames), flush=True)
+                print('[Input thread] Loading frame {} as image {}'.format(num_frames, num_images), flush=True)
             image = array_to_image(frame)
         except Exception as e:
             print('[Input thread] Frame {} cannot be loaded. Exception: {}'.format(frame, e))
