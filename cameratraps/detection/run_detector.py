@@ -50,7 +50,7 @@ import warnings
 import humanfriendly
 from tqdm import tqdm
 
-import visualization.visualization_utils as viz_utils
+from visualization import visualization_utils as viz_utils
 
 # ignoring all "PIL cannot read EXIF metainfo for the images" warnings
 warnings.filterwarnings('ignore', '(Possibly )?corrupt EXIF data', UserWarning)
