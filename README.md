@@ -8,7 +8,7 @@ cd /directory/to/install/in/
 ```
 - Clone the repository:
 ```
-git clone git@github.com:SamDower/GDP-3-Arribada.git
+git clone --recurse-submodules git@github.com:SamDower/GDP-3-Arribada.git
 cd GDP-3-Arribada
 ```
 - Create a new virtual environment: (Optional but recommended)

@@ -8,8 +8,8 @@ This enables the results to be used in our post-processing pipeline; see
 api/batch_processing/postprocessing/postprocess_batch_results.py .
 
 This script can save results to checkpoints intermittently, in case disaster
-strikes. To enable this, set --checkpoint_frequency to n > 0, and results 
-will be saved as a checkpoint every n images. Checkpoints will be written 
+strikes. To enable this, set --checkpoint_frequency to n > 0, and results
+will be saved as a checkpoint every n images. Checkpoints will be written
 to a file in the same directory as the output_file, and after all images
 are processed and final results file written to output_file, the temporary
 checkpoint file will be deleted. If you want to resume from a checkpoint, set
@@ -22,7 +22,7 @@ Has preliminary multiprocessing support for CPUs only; if a GPU is available, it
 use the GPU instead of CPUs, and the --ncores option will be ignored.  Checkpointing
 is not supported when using multiprocessing.
 
-Does not have a command-line option to bind the process to a particular GPU, but you can 
+Does not have a command-line option to bind the process to a particular GPU, but you can
 prepend with "CUDA_VISIBLE_DEVICES=0 ", for example, to bind to GPU 0, e.g.:
 
 CUDA_VISIBLE_DEVICES=0 python detection/run_detector_batch.py ~/models/camera_traps/megadetector/md_v4.1.0/md_v4.1.0.pb ~/data/test-small ~/tmp/mdv4test.json --output_relative_filenames --recursive
@@ -72,7 +72,7 @@ from PIL import Image
 
 # Add Python paths
 dirname = os.path.dirname(__file__)
-sys.path.append(os.path.join(dirname, 'cameratraps'))
+sys.path.append(os.path.join(dirname, 'CameraTraps'))
 sys.path.append(os.path.join(dirname, 'ai4eutils'))
 sys.path.append(os.path.join(dirname, 'yolov5'))
 
@@ -103,7 +103,7 @@ warnings.filterwarnings('ignore', category=FutureWarning)
 #%% Support functions for multiprocessing
 
 def producer_func(in_queue, stream_link):
-    """ 
+    """
     Producer function for a live stream.
 
     in_queue: queue to enqueue to
@@ -146,22 +146,22 @@ def producer_func(in_queue, stream_link):
             print('[Input thread] Queueing frame {}'.format(num_frames), flush=True)
 
         in_queue.put(image)
-    
+
     cap.release()
     in_queue.put(None)
-        
+
     print('[Input thread] Exiting', flush=True)
-    
-    
+
+
 def consumer_func(in_queue: multiprocessing.JoinableQueue,
                   out_queue: multiprocessing.JoinableQueue,
                   model_file, confidence_threshold):
-    """ 
+    """
     Consumer function
-    
+
     Pulls images from a blocking queue and processes them.
     """
-    
+
     # Record time
     if verbose:
         print('[Main thread] Starting', flush=True)
@@ -170,7 +170,7 @@ def consumer_func(in_queue: multiprocessing.JoinableQueue,
     elapsed = time.time() - start_time
     print('[Main thread] Loaded model (before queueing) in {}'.format(humanfriendly.format_timespan(elapsed)), flush=True)
     num_frames = 0
-    
+
     while True:
         image = in_queue.get()
         if image is None:
@@ -194,7 +194,7 @@ def consumer_func(in_queue: multiprocessing.JoinableQueue,
 def output_func(out_queue, stream_link, confidence_threshold, fps,
                 box_thickness=DEFAULT_BOX_THICKNESS,
                 box_expansion=DEFAULT_BOX_EXPANSION):
-    """ 
+    """
     Streams the results to a URL.
 
     out_queue: queue to dequeue from
@@ -214,7 +214,7 @@ def output_func(out_queue, stream_link, confidence_threshold, fps,
         if r is None:
             out_queue.task_done()
             return
-        
+
         image, result = r
 
         # Start ffmpeg if not started
@@ -272,14 +272,14 @@ def output_func(out_queue, stream_link, confidence_threshold, fps,
             # Changed to record current speed
             start_time = time.time()
             num_frames_since = 0
-            
+
 
 def run_detector_with_image_queue(in_stream_link, out_stream_link,
                                   model_file, confidence_threshold,
                                   fps, num_threads):
     """
     Driver function for the multiprocessing-based image queue.
-    Starts a reader process to read images from stream, but 
+    Starts a reader process to read images from stream, but
     processes images in the  process from which this function is called (i.e., does not currently
     spawn a separate consumer process).
     """
@@ -288,20 +288,20 @@ def run_detector_with_image_queue(in_stream_link, out_stream_link,
         in_stream_link = int(in_stream_link)
 
     print('GPU available: {}'.format(is_gpu_available(model_file)))
-    
+
     in_queue = multiprocessing.JoinableQueue(max_queue_size)
     out_queue = multiprocessing.JoinableQueue(max_queue_size)
-    
+
     thread_class = Thread if use_threads_for_queue else Process
     input_thread = thread_class(target=producer_func, args=(in_queue, in_stream_link,))
     input_thread.daemon = False
     input_thread.start()
-    
+
     output_thread = thread_class(target=output_func, args=(out_queue, out_stream_link,
                                                            confidence_threshold, fps))
     output_thread.daemon = True
     output_thread.start()
- 
+
     # TODO
     #
     # The queue system is a little more elegant if we start one thread for reading and one
@@ -325,14 +325,14 @@ def run_detector_with_image_queue(in_stream_link, out_stream_link,
 
     input_thread.join()
     print('Producer finished')
-   
+
     for consumer in consumers:
         consumer.join()
         print('Consumer finished')
-    
+
     output_thread.join()
     print('Output thread finished')
-    
+
     in_queue.join()
     out_queue.join()
     print('Queues joined')
@@ -368,11 +368,11 @@ def array_to_image(array):
 
     return image
 
-    
+
 #%% Command-line driver
 
 def main():
-    
+
     parser = argparse.ArgumentParser(
         description='Module to run a TF/PT animal detection model on a live stream')
     parser.add_argument(
@@ -419,7 +419,7 @@ def main():
     run_detector_with_image_queue(
         in_stream_link=args.in_stream_link,
         out_stream_link=args.out_stream_link,
-        model_file=args.detector_file, 
+        model_file=args.detector_file,
         confidence_threshold=args.threshold,
         fps=args.fps,
         num_threads=args.num_threads)

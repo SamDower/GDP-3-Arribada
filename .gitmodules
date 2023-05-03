@@ -1,0 +1,9 @@
+[submodule "ai4eutils"]
+	path = ai4eutils
+	url = https://github.com/Microsoft/ai4eutils.git
+[submodule "yolov5"]
+	path = yolov5
+	url = https://github.com/ecologize/yolov5.git
+[submodule "CameraTraps"]
+	path = CameraTraps
+	url = https://github.com/ecologize/CameraTraps.git
